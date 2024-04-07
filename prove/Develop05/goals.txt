@@ -1,0 +1,5 @@
+190
+SimpleGoal|Get relax|To get relax|10|True
+EternalGoal|Work|Go to work|5
+EternalGoal|Sport|Go to the gym|7
+ChecklistGoal|Studying programming|Studying programming 3 times|120|3|100|3

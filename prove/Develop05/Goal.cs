@@ -18,6 +18,11 @@ public abstract class Goal
         return _shortName;
     }
 
+    public int GetPoints()
+    {
+        return _points;
+    }
+
     public abstract void RecordEvent();
 
     public abstract bool IsComplete();
@@ -26,11 +31,11 @@ public abstract class Goal
     {
         if (IsComplete())
         {
-            return $"[X] {_shortName} {_description}";
+            return $"[X] {_shortName} ({_description})";
         }
         else
         {
-            return $"[ ] {_shortName} {_description}";
+            return $"[ ] {_shortName} ({_description})";
         }
     }
 

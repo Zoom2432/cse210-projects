@@ -4,6 +4,11 @@ public class SimpleGoal : Goal
 
     public SimpleGoal(string name, string description, int points) : base(name, description, points){}
 
+    public void SetComplete(bool ch)
+    {
+        _isComplete = ch;
+    }
+
     public override void RecordEvent()
     {
         Console.WriteLine($"Congratulations! You have earnd {_points} points!");
@@ -17,6 +22,6 @@ public class SimpleGoal : Goal
 
     public override string GetStringRepresentation()
     {
-        return $"SimpleGoal|{_shortName}|{_description}|{_points}";
+        return $"SimpleGoal|{_shortName}|{_description}|{_points}|{_isComplete}";
     }
 }

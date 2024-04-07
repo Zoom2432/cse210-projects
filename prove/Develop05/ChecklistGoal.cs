@@ -12,6 +12,11 @@ public class ChecklistGoal : Goal
         _bonus = bonus;
     }
 
+    public void SetAmountCompleted(int am)
+    {
+        _amountCompleted = am;
+    }
+
         public override void RecordEvent()
     {
         if (_amountCompleted < _target-1)
@@ -22,6 +27,7 @@ public class ChecklistGoal : Goal
         else
         {
             Console.WriteLine($"Congratulations! You have earnd {_points+_bonus} points!");
+            _points += _bonus;
             _amountCompleted += 1;
         }
     }
@@ -42,16 +48,16 @@ public class ChecklistGoal : Goal
     {
         if (_amountCompleted < _target)
         {
-            return $"[ ] {_shortName} {_description} -- Currently completed: {_amountCompleted}/{_target}";
+            return $"[ ] {_shortName} ({_description}) -- Currently completed: {_amountCompleted}/{_target}";
         }
         else
         {
-            return $"[X] {_shortName} {_description} -- Currently completed: {_amountCompleted}/{_target}";
+            return $"[X] {_shortName} ({_description}) -- Currently completed: {_amountCompleted}/{_target}";
         }
     }
 
     public override string GetStringRepresentation()
     {
-        return $"ChecklistGoal|{_shortName}|{_description}|{_points}|{_amountCompleted}|{_target}|{_bonus}";
+        return $"ChecklistGoal|{_shortName}|{_description}|{_points}|{_target}|{_bonus}|{_amountCompleted}";
     }
 }

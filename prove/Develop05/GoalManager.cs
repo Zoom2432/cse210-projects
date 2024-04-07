@@ -11,29 +11,42 @@ public class GoalManager
 
     public void Start()
     {
-        Console.WriteLine("Menu Options:\n1. Create New Goal\n2. List Goals\n3. Save Goals\n4. Load Goals\n5. Record Goals\n6. Quit\nSelect a choice from the menu: ");
+        Console.Write("Menu Options:\n1. Create New Goal\n2. List Goals\n3. Save Goals\n4. Load Goals\n5. Record Goals\n6. Quit\nSelect a choice from the menu: ");
     }
 
     public void DisplayPlayerInfo()
     {
-        Console.WriteLine($"You have {_score} points.");
+        Console.WriteLine($"You have {_score} points.\n");
     }
 
     public void ListGoalNames()
     {
         Console.WriteLine("The goals are:");
 
-        for (int i = 0; i < _goals.Count; i++)
+        if (_goals.Count() == 0)
         {
-            Console.WriteLine($"{i+1}. {_goals[i].GetShortName()}");
+            Console.WriteLine("false");
+        }
+        else
+        {
+            int count = 1;
+
+            for (int i = 0; i < _goals.Count; i++)
+            {
+                if (_goals[i].IsComplete() == false)
+                {
+                    Console.WriteLine($"{count}. {_goals[i].GetShortName()}");
+                    count++;
+                }
+            }
         }
     }
 
     public void ListGoalDetails()
     {
-        foreach (Goal g in _goals)
+        for (int i = 0; i < _goals.Count; i++)
         {
-            Console.WriteLine(g.GetDetailsString());
+            Console.WriteLine($"{i+1}. {_goals[i].GetDetailsString()}");
         }
     }
 
@@ -41,8 +54,8 @@ public class GoalManager
     {
         int choice = 0;
 
-        Console.WriteLine("The types of Goals are:\n1. Simple Goal\n2. Eternal Goal\n3. Checklist Goal\nWhich type of goal would you like to create? ");
-        while ( choice > 4 & choice < 0)
+        Console.Write("The types of Goals are:\n1. Simple Goal\n2. Eternal Goal\n3. Checklist Goal\nWhich type of goal would you like to create? ");
+        while (choice > 4 || choice < 1)
         {
             choice = Int32.Parse(Console.ReadLine());
             if (choice > 4 & choice < 0)
@@ -54,11 +67,11 @@ public class GoalManager
         switch (choice)
         {
             case 1:
-                Console.WriteLine("What is the name of your goal? ");
+                Console.Write("What is the name of your goal? ");
                 string name = Console.ReadLine();
-                Console.WriteLine("What is a short description of it? ");
+                Console.Write("What is a short description of it? ");
                 string desc = Console.ReadLine();
-                Console.WriteLine("What is the amount if points associated with this goal? ");
+                Console.Write("What is the amount if points associated with this goal? ");
                 int points = Int32.Parse(Console.ReadLine());
 
                 SimpleGoal g = new SimpleGoal(name, desc, points);
@@ -66,11 +79,11 @@ public class GoalManager
 
                 break;
             case 2:
-                Console.WriteLine("What is the name of your goal? ");
+                Console.Write("What is the name of your goal? ");
                 string name2 = Console.ReadLine();
-                Console.WriteLine("What is a short description of it? ");
+                Console.Write("What is a short description of it? ");
                 string desc2 = Console.ReadLine();
-                Console.WriteLine("What is the amount if points associated with this goal? ");
+                Console.Write("What is the amount if points associated with this goal? ");
                 int points2 = Int32.Parse(Console.ReadLine());
 
                 EternalGoal g2 = new EternalGoal(name2, desc2, points2);
@@ -78,15 +91,15 @@ public class GoalManager
 
                 break;
             case 3:
-                Console.WriteLine("What is the name of your goal? ");
+                Console.Write("What is the name of your goal? ");
                 string name3 = Console.ReadLine();
-                Console.WriteLine("What is a short description of it? ");
+                Console.Write("What is a short description of it? ");
                 string desc3 = Console.ReadLine();
-                Console.WriteLine("What is the amount if points associated with this goal? ");
+                Console.Write("What is the amount of points associated with this goal? ");
                 int points3 = Int32.Parse(Console.ReadLine());
-                Console.WriteLine("How mny times does this goal need to be accomplished for a bonus? ");
+                Console.Write("How many times does this goal need to be accomplished for a bonus? ");
                 int target = Int32.Parse(Console.ReadLine());
-                Console.WriteLine("What is the bonus for accomplishing it that many times? ");
+                Console.Write("What is the bonus for accomplishing it that many times? ");
                 int bonus = Int32.Parse(Console.ReadLine());
 
                 ChecklistGoal g3 = new ChecklistGoal(name3, desc3, points3, target, bonus);
@@ -99,10 +112,26 @@ public class GoalManager
     public void RecordEvent()
     {
         ListGoalNames();
-        Console.WriteLine("What goal did you accomplish? ");
+        Console.Write("What goal did you accomplish? ");
         int choice = Int32.Parse(Console.ReadLine());
 
-        _goals[choice-1].RecordEvent();
+        for (int i = 0; i < _goals.Count(); i++)
+        {
+            if (_goals[i].IsComplete() == false)
+            {
+                if (choice == 1)
+                {
+                    _goals[i].RecordEvent();
+                    _score += _goals[i].GetPoints();
+                    break;
+                }
+                else
+                {
+                    choice -= 1;
+                }
+            }
+        }
+        
     }
 
         public void SaveGoals()
@@ -112,9 +141,10 @@ public class GoalManager
 
         using (StreamWriter outputFile = new StreamWriter(filename))
         {
+            outputFile.WriteLine(_score);
+
             foreach (Goal g in _goals)
             {
-                outputFile.WriteLine(_score);
                 outputFile.WriteLine(g.GetStringRepresentation());
             }
         }
@@ -133,9 +163,15 @@ public class GoalManager
             if (parts[0] == "SimpleGoal")
             {
                 SimpleGoal s = new SimpleGoal(parts[1], parts[2], Int32.Parse(parts[3]));
+
+                if (Convert.ToBoolean(parts[4]))
+                {
+                    s.SetComplete(true);
+                }
+
                 _goals.Add(s);
             }
-            else if (parts[0] == "EtarnalGoal")
+            else if (parts[0] == "EternalGoal")
             {
                 EternalGoal s = new EternalGoal(parts[1], parts[2], Int32.Parse(parts[3]));
                 _goals.Add(s);
@@ -143,7 +179,14 @@ public class GoalManager
             else if (parts[0] == "ChecklistGoal")
             {
                 ChecklistGoal s = new ChecklistGoal(parts[1], parts[2], Int32.Parse(parts[3]), Int32.Parse(parts[4]), Int32.Parse(parts[5]));
+
+                s.SetAmountCompleted(Int32.Parse(parts[6]));
+
                 _goals.Add(s);
+            }
+            else if (parts.Length == 1)
+            {
+                _score = Int32.Parse(parts[0]);
             }
         }
     }
